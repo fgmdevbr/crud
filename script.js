@@ -1,12 +1,15 @@
-const STORAGE_KEY = 'crud_itens';
+const STORAGE_KEY = 'pacientes';
 
 let itens = carregar();
 
 const form = document.getElementById('form');
 const itemId = document.getElementById('itemId');
 const nome = document.getElementById('nome');
-const email = document.getElementById('email');
-const descricao = document.getElementById('descricao');
+const cpf = document.getElementById('cpf');
+const nascimento = document.getElementById('nascimento');
+const telefone = document.getElementById('telefone');
+const convenio = document.getElementById('convenio');
+const observacoes = document.getElementById('observacoes');
 const tbody = document.getElementById('tbody');
 const vazio = document.getElementById('vazio');
 const busca = document.getElementById('busca');
@@ -29,13 +32,21 @@ function gerarId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+function formatarData(iso) {
+  if (!iso) return '-';
+  const [ano, mes, dia] = iso.split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
 function renderizar(filtro = '') {
   const termo = filtro.trim().toLowerCase();
   const lista = termo
     ? itens.filter(i =>
         i.nome.toLowerCase().includes(termo) ||
-        i.email.toLowerCase().includes(termo) ||
-        (i.descricao || '').toLowerCase().includes(termo))
+        i.cpf.toLowerCase().includes(termo) ||
+        i.telefone.toLowerCase().includes(termo) ||
+        (i.convenio || '').toLowerCase().includes(termo) ||
+        (i.observacoes || '').toLowerCase().includes(termo))
     : itens;
 
   tbody.innerHTML = '';
@@ -52,11 +63,20 @@ function renderizar(filtro = '') {
     const tdNome = document.createElement('td');
     tdNome.textContent = item.nome;
 
-    const tdEmail = document.createElement('td');
-    tdEmail.textContent = item.email;
+    const tdCpf = document.createElement('td');
+    tdCpf.textContent = item.cpf;
 
-    const tdDesc = document.createElement('td');
-    tdDesc.textContent = item.descricao || '-';
+    const tdNascimento = document.createElement('td');
+    tdNascimento.textContent = formatarData(item.nascimento);
+
+    const tdTelefone = document.createElement('td');
+    tdTelefone.textContent = item.telefone;
+
+    const tdConvenio = document.createElement('td');
+    tdConvenio.textContent = item.convenio || '-';
+
+    const tdObservacoes = document.createElement('td');
+    tdObservacoes.textContent = item.observacoes || '-';
 
     const tdAcoes = document.createElement('td');
     tdAcoes.className = 'actions-cell';
@@ -75,8 +95,11 @@ function renderizar(filtro = '') {
     tdAcoes.appendChild(btnDel);
 
     tr.appendChild(tdNome);
-    tr.appendChild(tdEmail);
-    tr.appendChild(tdDesc);
+    tr.appendChild(tdCpf);
+    tr.appendChild(tdNascimento);
+    tr.appendChild(tdTelefone);
+    tr.appendChild(tdConvenio);
+    tr.appendChild(tdObservacoes);
     tr.appendChild(tdAcoes);
 
     tbody.appendChild(tr);
@@ -88,15 +111,18 @@ function editar(id) {
   if (!item) return;
   itemId.value = item.id;
   nome.value = item.nome;
-  email.value = item.email;
-  descricao.value = item.descricao || '';
+  cpf.value = item.cpf;
+  nascimento.value = item.nascimento;
+  telefone.value = item.telefone;
+  convenio.value = item.convenio || '';
+  observacoes.value = item.observacoes || '';
   btnSalvar.textContent = 'Salvar alterações';
   btnCancelar.classList.remove('hidden');
   nome.focus();
 }
 
 function excluir(id) {
-  if (!confirm('Excluir este item?')) return;
+  if (!confirm('Excluir este paciente?')) return;
   itens = itens.filter(i => i.id !== id);
   salvar();
   renderizar(busca.value);
@@ -114,11 +140,14 @@ form.addEventListener('submit', e => {
 
   const dados = {
     nome: nome.value.trim(),
-    email: email.value.trim(),
-    descricao: descricao.value.trim()
+    cpf: cpf.value.trim(),
+    nascimento: nascimento.value,
+    telefone: telefone.value.trim(),
+    convenio: convenio.value.trim(),
+    observacoes: observacoes.value.trim()
   };
 
-  if (!dados.nome || !dados.email) return;
+  if (!dados.nome || !dados.cpf || !dados.nascimento || !dados.telefone) return;
 
   if (itemId.value) {
     const item = itens.find(i => i.id === itemId.value);
