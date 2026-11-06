@@ -71,7 +71,7 @@ button {
   padding: 10px 18px;
   border: none;
   border-radius: 6px;
-  background: #4a7dfc;
+  background: #ffcc00;
   color: #fff;
   font-size: 0.95rem;
   cursor: pointer;
@@ -79,7 +79,7 @@ button {
 }
 
 button:hover {
-  background: #3763d6;
+  background: #e0b800;
 }
 
 button.secondary {
